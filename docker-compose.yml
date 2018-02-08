@@ -1,0 +1,14 @@
+version: '3'
+services:
+  farmer:
+    build: farmer/.
+    ports:
+     - "8000:8000"
+  factory:
+    build: factory/.
+    ports:
+     - "8001:8001"
+  snackbar:
+    build: snackbar/.
+    ports:
+     - "8002:8002"

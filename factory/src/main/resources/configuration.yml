@@ -1,0 +1,8 @@
+productionRate: 1000
+friesPerPotato: 10
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 8001
+      bindHost: 0.0.0.0
