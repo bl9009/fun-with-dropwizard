@@ -5,7 +5,7 @@ RUN apt-get install -y net-tools
 RUN /sbin/ifconfig
 
 COPY ./target/* /tmp/
-COPY src/main/resources/configuration.yml /tmp/
+COPY configuration.yml /tmp/
 
 WORKDIR /tmp
 

@@ -1,7 +1,7 @@
-productionRate: 1000
-
 server:
   applicationConnectors:
     - type: http
       port: 8000
       bindHost: 0.0.0.0
+
+productionRate: 1000
