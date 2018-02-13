@@ -10,12 +10,6 @@ public class RedisStore implements KvStore {
     public void connect(String host, int port) throws ConnectionException {
         jedis = new Jedis(host, port);
 
-        while (!jedis.isConnected()) {
-            System.out.println("connecting to jedis...");
-        }
-
-        jedis.set("test", "hallo");
-
         if (!jedis.isConnected()) {
             throw new ConnectionException();
         }

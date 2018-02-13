@@ -1,9 +1,6 @@
 package fwd.farmer.main;
 
-import fwd.common.main.KvStore;
-import fwd.common.main.KeyException;
-import fwd.common.main.PotatoDelivery;
-import fwd.common.main.PotatoOrder;
+import fwd.common.main.*;
 
 public class Farmer implements PotatoVendor {
 
@@ -19,36 +16,43 @@ public class Farmer implements PotatoVendor {
 
     @Override
     public synchronized PotatoDelivery deliver(PotatoOrder order) {
-        int stock = getStock();
+        /*KvTransaction transaction = store.initTransaction();
+
+        transaction.watch("stock");
+
+        int stock = getStock(transaction);
 
         while (stock < order.getQuantity())
         {
-            produce();
+            stock += produce();
         }
 
         int quantity = order.getQuantity();
 
-        setStock(stock - quantity);
+        do {
+            transaction.multi();
 
+            setStock(transaction, stock - quantity);
+        } while (transaction.exec());*/
+
+        int quantity = 123;
         return new PotatoDelivery(quantity);
     }
 
-    private void produce() {
-        int stock = getStock();
-
-        setStock(stock + productionRate);
+    private int produce() {
+        return productionRate;
     }
 
-    public int getStock() {
+    public int getStock(KvTransaction transaction) {
         try {
-            return store.getInt("stock");
+            return transaction.getInt("stock");
         }
         catch (KeyException e) {
             return 0;
         }
     }
 
-    public void setStock(int stock) {
-        store.setInt("stock", stock);
+    public void setStock(KvTransaction transaction, int stock) {
+        transaction.setInt("stock", stock);
     }
 }

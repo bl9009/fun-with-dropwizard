@@ -28,10 +28,10 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
         RedisStore store = new RedisStore();
 
         try {
-            store.connect("localhost");
+            store.connect("fwd_redis_1");
         }
         catch (ConnectionException e) {
-            return;
+            System.out.println("could not connect to redis");
         }
 
         farmer = new Farmer(store, configuration.getProductionRate());
