@@ -41,6 +41,13 @@ public class RedisTransaction implements KvTransaction {
     }
 
     @Override
+    public void close() {
+        jedis.close();
+
+        transaction = null;
+    }
+
+    @Override
     public int getInt(String key) throws KeyException {
         if (!jedis.exists(key)) {
             throw new KeyException();

@@ -16,7 +16,7 @@ public class Farmer implements PotatoVendor {
 
     @Override
     public synchronized PotatoDelivery deliver(PotatoOrder order) {
-        /*KvTransaction transaction = store.initTransaction();
+        KvTransaction transaction = store.initTransaction();
 
         transaction.watch("stock");
 
@@ -33,9 +33,8 @@ public class Farmer implements PotatoVendor {
             transaction.multi();
 
             setStock(transaction, stock - quantity);
-        } while (transaction.exec());*/
+        } while (transaction.exec());
 
-        int quantity = 123;
         return new PotatoDelivery(quantity);
     }
 

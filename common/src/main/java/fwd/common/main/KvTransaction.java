@@ -7,6 +7,8 @@ public interface KvTransaction {
     boolean exec();
     void discard();
 
+    void close();
+
     int getInt(String key) throws KeyException;
     void setInt(String key, int value);
 
