@@ -44,7 +44,9 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
             return;
         }
 
-        farmer = new Farmer(store, configuration.getProductionRate());
+        FarmerKvObject farmerObj = new FarmerKvObject(store);
+
+        farmer = new Farmer(farmerObj, configuration.getProductionRate());
 
         final PotatoesResource resource = new PotatoesResource(farmer);
 
