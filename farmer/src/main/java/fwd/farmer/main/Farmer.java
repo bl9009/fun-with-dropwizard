@@ -24,45 +24,32 @@ public class Farmer implements PotatoVendor {
 
         if (stock < quantity)
         {
-            stock += productionRate;
+            quantity = 0;
+        }
+        else {
+            stock -= quantity;
+
+            farmerObj.multi();
+
+            farmerObj.setStock(stock);
+
+            farmerObj.exec();
         }
 
-        stock -= quantity;
+        return new PotatoDelivery(quantity);
+    }
+
+    public void produce() {
+        farmerObj.watch();
+
+        int stock = farmerObj.getStock();
+
+        stock += productionRate;
 
         farmerObj.multi();
 
         farmerObj.setStock(stock);
 
         farmerObj.exec();
-
-        return new PotatoDelivery(quantity);
-    }
-
-    /*@Override
-    public synchronized PotatoDelivery deliver(PotatoOrder order) {
-        KvTransaction transaction = store.initTransaction();
-
-        transaction.watch("stock");
-
-        int stock = getStock(transaction);
-
-        while (stock < order.getQuantity())
-        {
-            stock += produce();
-        }
-
-        int quantity = order.getQuantity();
-
-        do {
-            transaction.multi();
-
-            setStock(transaction, stock - quantity);
-        } while (transaction.exec());
-
-        return new PotatoDelivery(quantity);
-    }*/
-
-    private int produce() {
-        return productionRate;
     }
 }
