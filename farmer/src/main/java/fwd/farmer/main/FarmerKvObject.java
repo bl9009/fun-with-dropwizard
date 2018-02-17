@@ -12,6 +12,8 @@ public class FarmerKvObject extends KvObject {
         super(store);
 
         stockKey = "farmer:stock";
+
+        setStock(0);
     }
 
     public void watch() {
