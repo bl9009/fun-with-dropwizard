@@ -13,7 +13,12 @@ public class FarmerKvObject extends KvObject {
 
         stockKey = "farmer:stock";
 
-        setStock(0);
+        try {
+            getTransaction().getInt(stockKey);
+        } catch (KeyException e)
+        {
+            setStock(0);
+        }
     }
 
     public void watch() {
@@ -31,5 +36,13 @@ public class FarmerKvObject extends KvObject {
 
     public void setStock(int stock) {
         getTransaction().setInt(stockKey, stock);
+    }
+
+    public void increaseStock(int quantity) {
+        getTransaction().incrBy(stockKey, quantity);
+    }
+
+    public void decreaseStock(int quantity) {
+        getTransaction().decrBy(stockKey, quantity);
     }
 }

@@ -12,7 +12,7 @@ public class KvObject {
         transaction.multi();
     }
 
-    public void exec() {
+    public void exec() throws TransactionFailedException {
         transaction.exec();
     }
 

@@ -4,7 +4,7 @@ public interface KvTransaction {
 
     void watch(String... keys);
     void multi();
-    boolean exec();
+    void exec() throws TransactionFailedException;
     void discard();
 
     void close();
@@ -20,4 +20,7 @@ public interface KvTransaction {
 
     String getString(String key) throws KeyException;
     void setString(String key, String value);
+
+    void incrBy(String key, int value);
+    void decrBy(String key, int value);
 }

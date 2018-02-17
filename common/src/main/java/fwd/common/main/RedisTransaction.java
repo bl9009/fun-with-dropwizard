@@ -25,12 +25,14 @@ public class RedisTransaction implements KvTransaction {
     }
 
     @Override
-    public boolean exec() {
+    public void exec() throws TransactionFailedException {
         boolean result = transaction.exec() != null;
 
         transaction = null;
 
-        return result;
+        if (!result) {
+            throw new TransactionFailedException();
+        }
     }
 
     @Override
@@ -49,11 +51,13 @@ public class RedisTransaction implements KvTransaction {
 
     @Override
     public int getInt(String key) throws KeyException {
-        if (!jedis.exists(key)) {
+        String result = jedis.get(key);
+
+        if (result == null) {
             throw new KeyException();
         }
 
-        return Integer.parseInt(jedis.get(key));
+        return Integer.parseInt(result);
     }
 
     @Override
@@ -68,11 +72,13 @@ public class RedisTransaction implements KvTransaction {
 
     @Override
     public double getDouble(String key) throws KeyException {
-        if (!jedis.exists(key)) {
+        String result = jedis.get(key);
+
+        if (result == null) {
             throw new KeyException();
         }
 
-        return Double.parseDouble(jedis.get(key));
+        return Double.parseDouble(result);
     }
 
     @Override
@@ -87,11 +93,13 @@ public class RedisTransaction implements KvTransaction {
 
     @Override
     public boolean getBoolean(String key) throws KeyException {
-        if (!jedis.exists(key)) {
+        String result = jedis.get(key);
+
+        if (result == null) {
             throw new KeyException();
         }
 
-        return Boolean.parseBoolean(jedis.get(key));
+        return Boolean.parseBoolean(result);
     }
 
     @Override
@@ -106,11 +114,13 @@ public class RedisTransaction implements KvTransaction {
 
     @Override
     public String getString(String key) throws KeyException {
-        if (!jedis.exists(key)) {
+        String result = jedis.get(key);
+
+        if (result == null) {
             throw new KeyException();
         }
 
-        return jedis.get(key);
+        return result;
     }
 
     @Override
@@ -120,6 +130,26 @@ public class RedisTransaction implements KvTransaction {
         }
         else {
             transaction.set(key, value);
+        }
+    }
+
+    @Override
+    public void incrBy(String key, int value) {
+        if (transaction == null) {
+            jedis.incrBy(key, value);
+        }
+        else {
+            transaction.incrBy(key, value);
+        }
+    }
+
+    @Override
+    public void decrBy(String key, int value) {
+        if (transaction == null) {
+            jedis.decrBy(key, value);
+        }
+        else {
+            transaction.decrBy(key, value);
         }
     }
 }

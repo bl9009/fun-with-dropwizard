@@ -18,38 +18,35 @@ public class Farmer implements PotatoVendor {
     public synchronized PotatoDelivery deliver(PotatoOrder order) {
         int quantity = order.getQuantity();
 
-        farmerObj.watch();
+        boolean retry = true;
 
-        int stock = farmerObj.getStock();
+        while (retry) {
+            farmerObj.watch();
 
-        if (stock < quantity)
-        {
-            quantity = 0;
-        }
-        else {
-            stock -= quantity;
+            int stock = farmerObj.getStock();
 
-            farmerObj.multi();
+            if (stock < quantity) {
+                quantity = 0;
+            }
+            else {
+                farmerObj.multi();
 
-            farmerObj.setStock(stock);
+                farmerObj.decreaseStock(stock);
 
-            farmerObj.exec();
+                try {
+                    farmerObj.exec();
+
+                    retry = false;
+                } catch (TransactionFailedException e) {
+                    retry = true;
+                }
+            }
         }
 
         return new PotatoDelivery(quantity);
     }
 
     public void produce() {
-        farmerObj.watch();
-
-        int stock = farmerObj.getStock();
-
-        stock += productionRate;
-
-        farmerObj.multi();
-
-        farmerObj.setStock(stock);
-
-        farmerObj.exec();
+        farmerObj.increaseStock(productionRate);
     }
 }
