@@ -1,9 +1,5 @@
 FROM openjdk:8-jre
 
-RUN apt-get update
-RUN apt-get install -y net-tools
-RUN /sbin/ifconfig
-
 COPY ./target/* /tmp/
 COPY configuration.yml /tmp/
 

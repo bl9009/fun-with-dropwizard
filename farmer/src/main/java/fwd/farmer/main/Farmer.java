@@ -1,54 +1,52 @@
 package fwd.farmer.main;
 
-import fwd.common.main.KvStore;
-import fwd.common.main.KeyException;
-import fwd.common.main.PotatoDelivery;
-import fwd.common.main.PotatoOrder;
+import fwd.common.main.*;
 
 public class Farmer implements PotatoVendor {
 
+    private FarmerKvObject farmerObj;
+
     private int productionRate;
 
-    private KvStore store;
-
-    public Farmer(KvStore store, int productionRate) {
-        this.store = store;
+    public Farmer(FarmerKvObject farmerObj, int productionRate) {
+        this.farmerObj = farmerObj;
 
         this.productionRate = productionRate;
     }
 
     @Override
     public synchronized PotatoDelivery deliver(PotatoOrder order) {
-        int stock = getStock();
-
-        while (stock < order.getQuantity())
-        {
-            produce();
-        }
-
         int quantity = order.getQuantity();
 
-        setStock(stock - quantity);
+        boolean retry = true;
+
+        while (retry) {
+            farmerObj.watch();
+
+            int stock = farmerObj.getStock();
+
+            if (stock < quantity) {
+                quantity = 0;
+            }
+            else {
+                farmerObj.multi();
+
+                farmerObj.decreaseStock(stock);
+
+                try {
+                    farmerObj.exec();
+
+                    retry = false;
+                } catch (TransactionFailedException e) {
+                    retry = true;
+                }
+            }
+        }
 
         return new PotatoDelivery(quantity);
     }
 
-    private void produce() {
-        int stock = getStock();
-
-        setStock(stock + productionRate);
-    }
-
-    public int getStock() {
-        try {
-            return store.getInt("stock");
-        }
-        catch (KeyException e) {
-            return 0;
-        }
-    }
-
-    public void setStock(int stock) {
-        store.setInt("stock", stock);
+    public void produce() {
+        farmerObj.increaseStock(productionRate);
     }
 }

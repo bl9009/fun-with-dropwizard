@@ -1,77 +1,46 @@
 package fwd.common.main;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class RedisStore implements KvStore {
 
-    private Jedis jedis;
+    //private Jedis jedis;
 
-    @Override
-    public void connect(String host, int port) throws ConnectionException {
-        jedis = new Jedis(host, port);
+    private JedisPool jedisPool;
 
-        if (!jedis.isConnected()) {
+    //public RedisStore() {;}
+
+    public RedisStore(String host, int port) throws ConnectionException {
+        JedisPoolConfig config = new JedisPoolConfig();
+
+        config.setMaxWaitMillis(120000);
+
+        jedisPool = new JedisPool(config, host, port);
+
+        Jedis jedis = null;
+
+        try {
+            jedis = jedisPool.getResource();
+        }
+        catch (JedisConnectionException e) {
             throw new ConnectionException();
         }
-    }
-
-    public void connect(String host) throws ConnectionException {
-        connect(host, 6379);
-    }
-
-    @Override
-    public int getInt(String key) throws KeyException {
-        if (!jedis.exists(key)) {
-            throw new KeyException();
+        finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
+    }
 
-        return Integer.parseInt(jedis.get(key));
+    public RedisStore(String host) throws ConnectionException {
+        this(host, 6379);
     }
 
     @Override
-    public void setInt(String key, int value) {
-        jedis.set(key, Integer.toString(value));
-    }
-
-    @Override
-    public double getDouble(String key) throws KeyException {
-        if (!jedis.exists(key)) {
-            throw new KeyException();
-        }
-
-        return Double.parseDouble(jedis.get(key));
-    }
-
-    @Override
-    public void setDouble(String key, double value) {
-        jedis.set(key, Double.toString(value));
-    }
-
-    @Override
-    public boolean getBoolean(String key) throws KeyException {
-        if (!jedis.exists(key)) {
-            throw new KeyException();
-        }
-
-        return Boolean.parseBoolean(jedis.get(key));
-    }
-
-    @Override
-    public void setBoolean(String key, boolean value) {
-        jedis.set(key, Boolean.toString(value));
-    }
-
-    @Override
-    public String getString(String key) throws KeyException {
-        if (!jedis.exists(key)) {
-            throw new KeyException();
-        }
-
-        return jedis.get(key);
-    }
-
-    @Override
-    public void setString(String key, String value) {
-        jedis.set(key, value);
+    public KvTransaction initTransaction() {
+        return new RedisTransaction(jedisPool.getResource());
     }
 }
