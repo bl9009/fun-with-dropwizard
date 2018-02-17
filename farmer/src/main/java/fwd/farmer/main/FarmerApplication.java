@@ -48,6 +48,24 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
 
         farmer = new Farmer(farmerObj, configuration.getProductionRate());
 
+        Runnable runnable = () -> {
+            while (true) {
+                farmer.produce();
+
+                try {
+                    Thread.sleep(10000);
+                }
+                catch(InterruptedException e)
+                {
+                    // ;
+                }
+            }
+        };
+
+        Thread thread = new Thread(runnable);
+
+        thread.start();
+
         final PotatoesResource resource = new PotatoesResource(farmer);
 
         environment.jersey().register(resource);
