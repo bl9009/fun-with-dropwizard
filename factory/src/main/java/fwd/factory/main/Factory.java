@@ -52,7 +52,7 @@ public class Factory {
         while (potatoStock < minQuantity) {
             log.info("potatoes out of stock, purchasing " + minQuantity * 10 + " potatoes....");
 
-            purchasePotatoes(new PotatoOrder(minQuantity * 10));
+            purchasePotatoes(new PotatoOrder("fwd_factory_1", minQuantity * 10));
         }
 
         int potatoesUsed = productionRate / friesPerPotato;

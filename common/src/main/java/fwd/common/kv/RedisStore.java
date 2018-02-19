@@ -1,4 +1,4 @@
-package fwd.common.main;
+package fwd.common.kv;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -7,11 +7,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class RedisStore implements KvStore {
 
-    //private Jedis jedis;
-
     private JedisPool jedisPool;
-
-    //public RedisStore() {;}
 
     public RedisStore(String host, int port) throws ConnectionException {
         JedisPoolConfig config = new JedisPoolConfig();

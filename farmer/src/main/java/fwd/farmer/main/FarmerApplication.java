@@ -1,7 +1,7 @@
 package fwd.farmer.main;
 
-import fwd.common.main.ConnectionException;
-import fwd.common.main.RedisStore;
+import fwd.common.kv.ConnectionException;
+import fwd.common.kv.RedisStore;
 import fwd.farmer.resources.PotatoesResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 public class FarmerApplication extends Application<FarmerConfiguration> {
 
     private Farmer farmer;
+
+    private FarmerRunner runner;
 
     private Logger log;
 
@@ -44,27 +46,13 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
             return;
         }
 
-        FarmerKvObject farmerObj = new FarmerKvObject(store);
+        FarmerWarehouse farmerObj = new FarmerWarehouse(store);
 
         farmer = new Farmer(farmerObj, configuration.getProductionRate());
 
-        Runnable runnable = () -> {
-            while (true) {
-                farmer.produce();
+        runner = new FarmerRunner(farmer);
 
-                try {
-                    Thread.sleep(10000);
-                }
-                catch(InterruptedException e)
-                {
-                    // ;
-                }
-            }
-        };
-
-        Thread thread = new Thread(runnable);
-
-        thread.start();
+        runner.run();
 
         final PotatoesResource resource = new PotatoesResource(farmer);
 

@@ -1,8 +1,9 @@
-package fwd.common.main;
+package fwd.common.kv;
 
 public interface KvTransaction {
 
     void watch(String... keys);
+    void unwatch();
     void multi();
     void exec() throws TransactionFailedException;
     void discard();
@@ -21,6 +22,6 @@ public interface KvTransaction {
     String getString(String key) throws KeyException;
     void setString(String key, String value);
 
-    void incrBy(String key, int value);
-    void decrBy(String key, int value);
+    void increaseBy(String key, int value);
+    void decreaseBy(String key, int value);
 }

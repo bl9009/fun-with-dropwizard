@@ -1,4 +1,4 @@
-package fwd.common.main;
+package fwd.common.kv;
 
 public class KeyException extends Exception {
 }

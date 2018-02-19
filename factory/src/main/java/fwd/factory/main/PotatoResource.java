@@ -8,6 +8,6 @@ public class PotatoResource implements PotatoVendor {
 
     @Override
     public PotatoDelivery purchase(PotatoOrder order) {
-        return new PotatoDelivery(order.getQuantity());
+        return new PotatoDelivery("fwd_factory_1", order.getQuantity());
     }
 }

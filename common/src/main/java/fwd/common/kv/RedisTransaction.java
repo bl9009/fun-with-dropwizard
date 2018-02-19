@@ -1,4 +1,4 @@
-package fwd.common.main;
+package fwd.common.kv;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
@@ -17,6 +17,11 @@ public class RedisTransaction implements KvTransaction {
     @Override
     public void watch(String... keys) {
         jedis.watch(keys);
+    }
+
+    @Override
+    public void unwatch() {
+        jedis.unwatch();
     }
 
     @Override
@@ -134,7 +139,7 @@ public class RedisTransaction implements KvTransaction {
     }
 
     @Override
-    public void incrBy(String key, int value) {
+    public void increaseBy(String key, int value) {
         if (transaction == null) {
             jedis.incrBy(key, value);
         }
@@ -144,7 +149,7 @@ public class RedisTransaction implements KvTransaction {
     }
 
     @Override
-    public void decrBy(String key, int value) {
+    public void decreaseBy(String key, int value) {
         if (transaction == null) {
             jedis.decrBy(key, value);
         }

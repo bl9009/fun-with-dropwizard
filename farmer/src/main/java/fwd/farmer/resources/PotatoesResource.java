@@ -1,26 +1,28 @@
 package fwd.farmer.resources;
 
-import fwd.common.main.PotatoDelivery;
 import fwd.common.main.PotatoOrder;
-import fwd.farmer.main.PotatoVendor;
+import fwd.farmer.main.PotatoProducer;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-@Path("/farmer/potatoes")
+@Path("/farmer")
 @Produces(MediaType.APPLICATION_JSON)
 public class PotatoesResource {
 
-    private PotatoVendor producer;
+    private PotatoProducer producer;
 
-    public PotatoesResource(PotatoVendor producer) {
+    public PotatoesResource(PotatoProducer producer) {
         this.producer = producer;
     }
 
-    @GET
-    public PotatoDelivery getPotatoes(@QueryParam("quantity") int quantity) {
-        PotatoDelivery delivery = producer.deliver(new PotatoOrder(quantity));
+    @POST
+    @Path("/orders")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getPotatoes(PotatoOrder order) {
+        producer.addOrder(order);
 
-        return delivery;
+        return Response.status(201).build();
     }
 }
