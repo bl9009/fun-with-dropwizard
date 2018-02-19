@@ -13,8 +13,6 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
 
     private Farmer farmer;
 
-    private FarmerRunner runner;
-
     private Logger log;
 
     public static void main(String[] args) throws Exception {
@@ -46,16 +44,16 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
             return;
         }
 
-        FarmerWarehouse farmerObj = new FarmerWarehouse(store);
+        FarmerWarehouse warehouse = new FarmerWarehouse(store);
 
-        farmer = new Farmer(farmerObj, configuration.getProductionRate());
+        farmer = new Farmer(warehouse, configuration.getProductionRate());
 
-        runner = new FarmerRunner(farmer);
-
-        runner.run();
+        final FarmerRunner runner = new FarmerRunner(farmer);
 
         final PotatoesResource resource = new PotatoesResource(farmer);
 
         environment.jersey().register(resource);
+
+        environment.lifecycle().manage(runner);
     }
 }
