@@ -1,7 +1,13 @@
 package fwd.farmer.main;
 
-import fwd.common.kv.TransactionFailedException;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import fwd.common.main.*;
+import org.jongo.Jongo;
+import org.jongo.MongoCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +22,13 @@ public class Farmer implements PotatoProducer {
 
     private int productionRate;
 
+    private MongoClient mongo;
+    private DB db;
+    private DBCollection mongoColl;
+    private Jongo jongo;
+    private MongoCollection coll;
+    //private JacksonDBCollection<PotatoOrder, String> coll;
+
     Logger logger;
 
     public Farmer(FarmerWarehouse warehouse, int productionRate) {
@@ -26,11 +39,22 @@ public class Farmer implements PotatoProducer {
         orders = new LinkedList();
         deliveries = new LinkedList();
 
+        mongo = new MongoClient("fwd_mongo_1");
+        db = mongo.getDB("farmer");
+        mongoColl = db.getCollection("orders");
+
+        jongo = new Jongo(db);
+        coll = jongo.getCollection("orders");
+
         logger = LoggerFactory.getLogger(Farmer.class);
     }
 
     @Override
     public synchronized void addOrder(PotatoOrder order) {
+        //WriteResult<PotatoOrder, String> result = coll.insert(order);
+
+        coll.save(order);
+
         orders.push(order);
 
         logger.info(order.getCustomer() + " ordered " + order.getQuantity() + " potatoes.");

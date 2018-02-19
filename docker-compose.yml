@@ -3,13 +3,19 @@ services:
   redis:
     image: redis
     networks:
-      - backend
+      - redis
+  mongo:
+    image: mongo
+    networks:
+      - mongo
   farmer:
     build: farmer/.
     ports:
       - "8000:8000"
     networks:
       - backend
+      - redis
+      - mongo
   factory:
     build: factory/.
     ports:
@@ -24,4 +30,8 @@ services:
       - backend
 networks:
   backend:
+    driver: bridge
+  redis:
+    driver: bridge
+  mongo:
     driver: bridge
