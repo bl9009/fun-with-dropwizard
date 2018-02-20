@@ -2,6 +2,8 @@
 
 Simulating a Snackbar while playing around with Microservices in Java and trying out different technologies related to Microservices. 
 
-To build: `mvn install`
+Build microservices: `mvn package`
 
-Run with: `docker-compose up`
+Build containers: `docker-compose build`
+
+Run: `docker-compose up`
