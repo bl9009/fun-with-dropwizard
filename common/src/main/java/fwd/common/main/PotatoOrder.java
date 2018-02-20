@@ -7,21 +7,21 @@ public class PotatoOrder {
     private String customer;
     private int quantity;
 
-    private OrderState state;
+    private OrderStatus status;
 
     public PotatoOrder() {
-        // ;
+        status = OrderStatus.RECEIVED;
     }
 
-    public PotatoOrder(String customer, int quantity, OrderState state) {
-            this.customer = customer;
-            this.quantity = quantity;
+    public PotatoOrder(String customer, int quantity, OrderStatus status) {
+        this.customer = customer;
+        this.quantity = quantity;
 
-            this.state = state;
+        this.status = status;
     }
 
     public PotatoOrder(String customer, int quantity) {
-        this(customer, quantity, OrderState.RECEIVED);
+        this(customer, quantity, OrderStatus.RECEIVED);
     }
 
     @JsonProperty
@@ -45,13 +45,13 @@ public class PotatoOrder {
     }
 
     @JsonProperty
-    public OrderState getState() {
-        return this.state;
+    public OrderStatus getStatus() {
+        return this.status;
     }
 
     @JsonProperty
-    public void setState(OrderState state) {
-        this.state = state;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
 }
