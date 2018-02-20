@@ -1,13 +1,6 @@
 package fwd.farmer.main;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import fwd.common.main.*;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,46 +9,30 @@ import java.util.LinkedList;
 public class Farmer implements PotatoProducer {
 
     private FarmerWarehouse warehouse;
+    private FarmerFulfillment fulfillment;
 
-    private LinkedList<PotatoOrder> orders;
     private LinkedList<PotatoDelivery> deliveries;
 
     private int productionRate;
 
-    private MongoClient mongo;
-    private DB db;
-    private DBCollection mongoColl;
-    private Jongo jongo;
-    private MongoCollection coll;
-    //private JacksonDBCollection<PotatoOrder, String> coll;
-
     Logger logger;
 
-    public Farmer(FarmerWarehouse warehouse, int productionRate) {
+    public Farmer(FarmerWarehouse warehouse,
+                  FarmerFulfillment fulfillment,
+                  int productionRate) {
         this.warehouse = warehouse;
+        this.fulfillment = fulfillment;
 
         this.productionRate = productionRate;
 
-        orders = new LinkedList();
         deliveries = new LinkedList();
-
-        mongo = new MongoClient("fwd_mongo_1");
-        db = mongo.getDB("farmer");
-        mongoColl = db.getCollection("orders");
-
-        jongo = new Jongo(db);
-        coll = jongo.getCollection("orders");
 
         logger = LoggerFactory.getLogger(Farmer.class);
     }
 
     @Override
     public synchronized void addOrder(PotatoOrder order) {
-        //WriteResult<PotatoOrder, String> result = coll.insert(order);
-
-        coll.save(order);
-
-        orders.push(order);
+        fulfillment.receivedOrder(order);
 
         logger.info(order.getCustomer() + " ordered " + order.getQuantity() + " potatoes.");
     }
@@ -72,26 +49,35 @@ public class Farmer implements PotatoProducer {
 
     @Override
     public synchronized void processOrder() {
-        while (!orders.isEmpty()) {
-            PotatoOrder order = orders.peek();
-
-            int quantity = order.getQuantity();
+        while (fulfillment.ordersAvailable()) {
 
             try {
-                warehouse.fetch(quantity);
-            } catch (OutOfStockException e) {
-                logger.warn("Out of stock, will put order on hold!");
+                PotatoOrder order = fulfillment.processNextOrder();
 
-                return;
+                int quantity = order.getQuantity();
+
+                try {
+                    warehouse.fetch(quantity);
+                } catch (OutOfStockException e) {
+                    logger.warn("Out of stock, will put order on hold!");
+
+                    return;
+                }
+
+                PotatoDelivery delivery = new PotatoDelivery(order.getCustomer(), quantity);
+
+                deliveries.push(delivery);
+
+                fulfillment.orderCompleted(order);
+
+                logger.info("Prepared " + quantity + " potatoes for " + order.getCustomer() + ".");
             }
+            catch (NoOrdersToProcessException e)
+            {
+                logger.warn("Could not retrieve order although orders available!");
 
-            PotatoDelivery delivery = new PotatoDelivery(order.getCustomer(), quantity);
-
-            deliveries.push(delivery);
-
-            orders.removeFirst();
-
-            logger.info("Prepared " + quantity + " potatoes for " + order.getCustomer() + ".");
+                break;
+            }
         }
 
         logger.info("No orders pending.");
@@ -99,7 +85,6 @@ public class Farmer implements PotatoProducer {
 
     @Override
     public synchronized void deliver() {
-
         //return new PotatoDelivery(quantity);
     }
 }

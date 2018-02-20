@@ -1,5 +1,7 @@
 package fwd.farmer.main;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import fwd.common.kv.ConnectionException;
 import fwd.common.kv.RedisStore;
 import fwd.farmer.resources.PotatoesResource;
@@ -44,9 +46,15 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
             return;
         }
 
-        FarmerWarehouse warehouse = new FarmerWarehouse(store);
+        MongoClientOptions.Builder builder = MongoClientOptions.builder();
+        builder.connectTimeout(10000);
 
-        farmer = new Farmer(warehouse, configuration.getProductionRate());
+        MongoClient mongoClient = new MongoClient("fwd_mongo_1", builder.build());
+
+        FarmerWarehouse warehouse = new FarmerWarehouse(store);
+        FarmerFulfillment fulfillment = new MongoFarmerFulfillment(mongoClient);
+
+        farmer = new Farmer(warehouse, fulfillment, configuration.getProductionRate());
 
         final FarmerRunner runner = new FarmerRunner(farmer);
 
