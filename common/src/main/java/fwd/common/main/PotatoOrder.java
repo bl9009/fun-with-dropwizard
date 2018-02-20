@@ -7,13 +7,21 @@ public class PotatoOrder {
     private String customer;
     private int quantity;
 
+    private OrderState state;
+
     public PotatoOrder() {
         // ;
     }
 
+    public PotatoOrder(String customer, int quantity, OrderState state) {
+            this.customer = customer;
+            this.quantity = quantity;
+
+            this.state = state;
+    }
+
     public PotatoOrder(String customer, int quantity) {
-        this.customer = customer;
-        this.quantity = quantity;
+        this(customer, quantity, OrderState.RECEIVED);
     }
 
     @JsonProperty
@@ -34,6 +42,16 @@ public class PotatoOrder {
     @JsonProperty
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @JsonProperty
+    public OrderState getState() {
+        return this.state;
+    }
+
+    @JsonProperty
+    public void setState(OrderState state) {
+        this.state = state;
     }
 
 }
