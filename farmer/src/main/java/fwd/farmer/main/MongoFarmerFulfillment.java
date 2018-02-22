@@ -24,19 +24,14 @@ public class MongoFarmerFulfillment implements FarmerFulfillment {
     }
 
     @Override
-    public void receivedOrder(PotatoOrder order) {
+    public synchronized void receivedOrder(PotatoOrder order) {
         coll.insert(order);
     }
 
     @Override
-    public PotatoOrder processNextOrder() throws NoOrdersToProcessException {
-        PotatoOrder order = coll.findAndModify("{" +
-                        "query: { 'status': # }," +
-                        "update: { $set: { 'status': # } }," +
-                        "sort: { '_id': 1 }," +
-                        "new: true " +
-                        "}",
-                OrderStatus.RECEIVED, OrderStatus.PROCESSING)
+    public synchronized PotatoOrder processNextOrder() throws NoOrdersToProcessException {
+        PotatoOrder order = coll.findAndModify("{ status: # }", OrderStatus.RECEIVED)
+                .with("{ $set: { status: # } }", OrderStatus.PROCESSING)
                 .as(PotatoOrder.class);
 
         if (order == null) {
@@ -47,12 +42,12 @@ public class MongoFarmerFulfillment implements FarmerFulfillment {
     }
 
     @Override
-    public void orderCompleted(PotatoOrder order) {
+    public synchronized void orderCompleted(PotatoOrder order) {
         coll.update("{ status: # }", OrderStatus.COMPLETED).with(order);
     }
 
     @Override
-    public boolean ordersAvailable() {
+    public synchronized boolean ordersAvailable() {
         return coll.count("{ status: # }", OrderStatus.RECEIVED) > 0;
     }
 }
