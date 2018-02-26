@@ -8,6 +8,10 @@ services:
     image: mongo
     networks:
       - mongo
+  activemq:
+    image: rmohr/activemq
+    networks:
+      - activemq
   farmer:
     build: farmer/.
     ports:
@@ -16,6 +20,7 @@ services:
       - backend
       - redis
       - mongo
+      - activemq
   factory:
     build: factory/.
     ports:
@@ -34,4 +39,6 @@ networks:
   redis:
     driver: bridge
   mongo:
+    driver: bridge
+  activemq:
     driver: bridge
