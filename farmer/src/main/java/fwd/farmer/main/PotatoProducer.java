@@ -8,6 +8,6 @@ public interface PotatoProducer {
     void addOrder(PotatoOrder order);
     void produce();
     void processOrder();
-    void deliver();
+    void dispatch(PotatoDelivery delivery);
 
 }

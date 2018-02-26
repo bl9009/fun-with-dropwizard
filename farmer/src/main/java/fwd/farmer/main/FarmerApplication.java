@@ -4,7 +4,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import fwd.common.kv.ConnectionException;
 import fwd.common.kv.RedisStore;
+import fwd.farmer.dispatch.MqDispatch;
+import fwd.farmer.fulfillment.FarmerFulfillment;
+import fwd.farmer.fulfillment.MongoFulfillment;
 import fwd.farmer.resources.PotatoesResource;
+import fwd.farmer.warehouse.RedisWarehouse;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -51,10 +55,11 @@ public class FarmerApplication extends Application<FarmerConfiguration> {
 
         MongoClient mongoClient = new MongoClient("fwd_mongo_1", builder.build());
 
-        FarmerWarehouse warehouse = new FarmerWarehouse(store);
-        FarmerFulfillment fulfillment = new MongoFarmerFulfillment(mongoClient);
+        RedisWarehouse warehouse = new RedisWarehouse(store);
+        FarmerFulfillment fulfillment = new MongoFulfillment(mongoClient);
+        MqDispatch dispatch = new MqDispatch();
 
-        farmer = new Farmer(warehouse, fulfillment, configuration.getProductionRate());
+        farmer = new Farmer(warehouse, fulfillment, dispatch, configuration.getProductionRate());
 
         final FarmerRunner runner = new FarmerRunner(farmer);
 

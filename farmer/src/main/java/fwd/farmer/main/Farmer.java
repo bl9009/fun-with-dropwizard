@@ -1,6 +1,13 @@
 package fwd.farmer.main;
 
 import fwd.common.main.*;
+import fwd.farmer.dispatch.DispatchFailedException;
+import fwd.farmer.dispatch.FarmerDispatch;
+import fwd.farmer.fulfillment.FarmerFulfillment;
+import fwd.farmer.fulfillment.NoOrdersToProcessException;
+import fwd.farmer.warehouse.RedisWarehouse;
+import fwd.farmer.warehouse.OutOfCapacityException;
+import fwd.farmer.warehouse.OutOfStockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,8 +15,9 @@ import java.util.LinkedList;
 
 public class Farmer implements PotatoProducer {
 
-    private FarmerWarehouse warehouse;
+    private RedisWarehouse warehouse;
     private FarmerFulfillment fulfillment;
+    private FarmerDispatch dispatch;
 
     private LinkedList<PotatoDelivery> deliveries;
 
@@ -17,8 +25,9 @@ public class Farmer implements PotatoProducer {
 
     Logger logger;
 
-    public Farmer(FarmerWarehouse warehouse,
+    public Farmer(RedisWarehouse warehouse,
                   FarmerFulfillment fulfillment,
+                  FarmerDispatch dispatch,
                   int productionRate) {
         this.warehouse = warehouse;
         this.fulfillment = fulfillment;
@@ -66,7 +75,8 @@ public class Farmer implements PotatoProducer {
 
                 PotatoDelivery delivery = new PotatoDelivery(order.getCustomer(), quantity);
 
-                deliveries.push(delivery);
+                //deliveries.push(delivery);
+                dispatch(delivery);
 
                 fulfillment.orderCompleted(order);
 
@@ -84,7 +94,12 @@ public class Farmer implements PotatoProducer {
     }
 
     @Override
-    public synchronized void deliver() {
-        //return new PotatoDelivery(quantity);
+    public synchronized void dispatch(PotatoDelivery delivery) {
+        try {
+            dispatch.dispatch(delivery);
+        } catch (DispatchFailedException e) {
+            logger.error("Could not dispatch delivery.");
+        }
+
     }
 }
