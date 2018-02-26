@@ -1,4 +1,4 @@
-package fwd.farmer.main;
+package fwd.farmer.fulfillment;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -7,14 +7,14 @@ import fwd.common.main.PotatoOrder;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 
-public class MongoFarmerFulfillment implements FarmerFulfillment {
+public class MongoFulfillment implements FarmerFulfillment {
 
     private MongoClient mongo;
     private DB db;
     private Jongo jongo;
     private MongoCollection coll;
 
-    public MongoFarmerFulfillment(MongoClient mongoClient) {
+    public MongoFulfillment(MongoClient mongoClient) {
         this.mongo = mongoClient;
 
         db = mongo.getDB("farmer");

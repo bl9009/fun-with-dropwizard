@@ -1,4 +1,4 @@
-package fwd.farmer.main;
+package fwd.farmer.fulfillment;
 
 public class NoOrdersToProcessException extends Exception {
 }

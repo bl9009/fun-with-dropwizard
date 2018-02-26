@@ -1,17 +1,17 @@
-package fwd.farmer.main;
+package fwd.farmer.warehouse;
 
 import fwd.common.kv.KeyException;
 import fwd.common.kv.KvObject;
 import fwd.common.kv.KvStore;
 import fwd.common.kv.TransactionFailedException;
 
-public class FarmerWarehouse extends KvObject {
+public class RedisWarehouse extends KvObject {
 
     private int capacity;
 
     private String stockKey;
 
-    public FarmerWarehouse(KvStore store, int capacity) {
+    public RedisWarehouse(KvStore store, int capacity) {
         super(store);
 
         this.capacity = capacity;
@@ -26,7 +26,7 @@ public class FarmerWarehouse extends KvObject {
         }
     }
 
-    public FarmerWarehouse(KvStore store) {
+    public RedisWarehouse(KvStore store) {
         this(store, 123456789);
     }
 

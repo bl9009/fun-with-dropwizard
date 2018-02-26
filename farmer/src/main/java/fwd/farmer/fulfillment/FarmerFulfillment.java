@@ -1,4 +1,4 @@
-package fwd.farmer.main;
+package fwd.farmer.fulfillment;
 
 import fwd.common.main.PotatoOrder;
 
