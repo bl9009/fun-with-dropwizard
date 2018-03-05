@@ -1,4 +1,4 @@
-# Fun with Dropwizard.io
+# Fun with Microservices
 
 Example application for playing around with Microservices in Java and Scala. Trying out different technologies related to Microservices, like:
 * Dropwizard
