@@ -9,7 +9,6 @@
         <module>factory</module>
         <module>snackbar</module>
         <module>common</module>
-        <module>factory-scala</module>
     </modules>
 
     <repositories>
