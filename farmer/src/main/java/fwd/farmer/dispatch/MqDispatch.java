@@ -3,7 +3,6 @@ package fwd.farmer.dispatch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fwd.common.main.PotatoDelivery;
-import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,9 @@ public class MqDispatch implements FarmerDispatch {
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            Topic topic = session.createTopic("farmer_factory_dispatch");
+            Queue queue = session.createQueue("farmer_factory_dispatch");
 
-            messageProducer = session.createProducer(topic);
+            messageProducer = session.createProducer(queue);
         }
         catch (JMSException e) {
             logger.error("Could not init ActiveMQ topic: ", e.getMessage());
