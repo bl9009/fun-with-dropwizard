@@ -22,7 +22,7 @@
         </repository>
     </repositories>
 
-    <groupId>fun-with-dropwizard</groupId>
+    <groupId>fun-with-microservices</groupId>
     <artifactId>main</artifactId>
     <version>1.0-SNAPSHOT</version>
 
